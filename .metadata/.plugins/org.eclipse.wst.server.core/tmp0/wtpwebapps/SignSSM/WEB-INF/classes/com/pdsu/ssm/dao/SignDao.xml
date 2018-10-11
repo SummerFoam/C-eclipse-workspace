@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.SignDao">
+  	<!-- 签到后添加 -->
+  	<insert id="add" parameterType="com.pdsu.ssm.bean.Sign">
+  		insert into sign(croom_id,user_stu_id,user_teach_id,course_id,arrange_id,signtime,create_time,update_time) 
+		values(#{croomId},#{userStuId},#{userTeachId},#{courseId},#{arrangeId},#{signtime},#{createTime},#{updateTime})
+  	</insert>
+  	
+  		<!-- 根据班级id课程id学生id查询 -->
+  	<select id="findByFourId" resultType="com.pdsu.ssm.bean.Sign">
+  		select * from sign 
+  		where croom_id=#{croomId} and course_id=#{courseId} and user_teach_id=#{userTeachId} and user_stu_id=#{userStuId}
+  		order by signtime desc
+		limit 1
+  	</select>
+  	
+  	<!-- 查看签到列表 -->
+  	<select id="findAll" resultType="java.util.HashMap">
+  		select croom.name croname,course.name couname,user_student.name uname,user_student.sno,teacher.name tchname,sign.id,sign.signtime,sign.create_time,sign.update_time
+		from croom,course,user_student,teacher,sign
+		where croom.id=sign.croom_id and course.id=sign.course_id and user_student.id=sign.user_stu_id and teacher.id=sign.user_teach_id
+  		limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="findTotalCount" resultType="java.lang.Integer">
+  		select count(*) from sign
+  	</select>
+  	
+  	<!-- 批量删除 -->
+  	<delete id="deleteByIds" parameterType="com.pdsu.ssm.bean.Sign">
+  		delete from sign where id=#{id}
+  	</delete>
+  	<!-- 删除 -->
+  	<delete id="delete" parameterType="com.pdsu.ssm.bean.Sign">
+  		delete from sign where id=#{id}
+  	</delete>
+  	
+  	<!-- 模糊查询 -->
+  	<select id="findByName" resultType="java.util.HashMap">
+  		select croom.name croname,course.name couname,user_student.name uname,user_student.sno,teacher.name tchname,sign.signtime,sign.create_time,sign.update_time
+		from croom,course,user_student,teacher,sign
+		where croom.id=sign.croom_id and course.id=sign.course_id and user_student.id=sign.user_stu_id and teacher.id=sign.user_teach_id and user_teach_id=#{userTeachId} 
+  		limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getLikeNameCount" resultType="java.lang.Integer">
+  		select count(*) from sign
+  	</select>
+  	
+  	<!-- 查询最近一次签到 -->
+  	<select id="findCurrent" resultType="java.util.HashMap">
+  		select user_student.name studentName,user_student.sno,sign.signtime,teacher.name tName
+		from sign,user_student,teacher
+		where user_student.id=sign.user_stu_id
+		and sign.signtime>#{signtime}
+  	</select>
+  	
+  	<!-- 根据croomId查询 -->
+  	<select id="findsignBycroomId" resultType="com.pdsu.ssm.bean.Sign">
+  		select * from sign where croom_id=#{croomId}
+  	</select>
+  	
+  	<!-- 根据courseId查询 -->
+  	<select id="findsignBycourseId" resultType="com.pdsu.ssm.bean.Sign">
+  		select * from sign where course_id=#{courseId}
+  	</select>
+  	
+  	<!-- 根据arrangeId查询 -->
+  	<select id="findsignByarrangeId" resultType="com.pdsu.ssm.bean.Sign">
+  		select * from sign where arrange_id=#{arrangeIdseId}
+  	</select>
+  	
+  	<!-- 查询每日签到记录 -->
+  	<select id="findByDay" resultType="java.util.HashMap">
+  		select user_student.name studentName,user_student.sno,sign.signtime,teacher.name tName
+		from sign,user_student,teacher
+		where user_student.id=sign.user_stu_id
+		and teacher.id=sign.user_teach_id
+		and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+		and sign.user_teach_id=#{userTeachId}
+  	</select>
+  	
+  	<!-- 查询学期签到 -->
+  	<select id="findByTerm" resultType="java.util.HashMap">
+  		select count(user_stu_id) count,user_student.name studentName,user_student.sno,sign.signtime,teacher.name tName
+		from sign,user_student,teacher
+		where user_student.id=sign.user_stu_id
+		and teacher.id=sign.user_teach_id
+		and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+		and sign.user_teach_id=#{userTeachId}
+		group by user_stu_id
+  	</select>
+  	
+  	<!-- 随机抽查 -->
+  	<select id="findRandom" resultType="java.util.HashMap">
+  		select sign.id,user_student.name studentName,user_student.sno,user_student.id uid,sign.signtime,teacher.name tName,teacher.id tid,course.name couName,course.id couId
+		from sign,user_student,teacher,course
+		where user_student.id=sign.user_stu_id
+		and teacher.id=sign.user_teach_id
+		and course.id=sign.course_id
+		and sign.signtime>#{signtime}
+		and user_stu_id=#{userStuId}
+		and user_teach_id=#{userTeachId}
+		and sign.status=1
+		limit 1
+  	</select>
+  	
+  	<!-- 旷课处理 -->
+  	<update id="updateAbsent" parameterType="com.pdsu.ssm.bean.Sign">
+  		update sign set status=0
+  		where id=#{id}
+  	</update>
+  	
+  	<!-- 查找本节课程缺勤学生 -->
+  	<select id="findAbsent" resultType="java.util.HashMap">
+  		select * from user_student,sign where sno not in(
+	  		select user_student.sno
+			from sign,user_student
+			where user_student.id=sign.user_stu_id
+			and sign.signtime>#{signtime}
+			and sign.status=1
+		)
+  	</select>
+  	
+  	<!-- 周签到 -->
+  	<select id="findWeekSign" resultType="java.util.HashMap">
+  		select DISTINCT user_student.name,user_student.id stuId,user_student.sno,user.headimg
+		from user_student,sign,user
+		where user_student.id=sign.user_stu_id 
+		and user_student.user_id=user.id
+		and sign.signtime between  #{signtimeBegin} and #{signtimeEnd}
+		and user_student.class_id=#{classId}
+  	</select>
+  	
+  	<!-- 本周应到次数 -->
+  	<select id="weekTotalCount" resultType="java.lang.Integer">
+  		select MAX(count)
+		from (select COUNT(*) count
+		from user_student,sign
+		where user_student.id=sign.user_stu_id 
+		and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+		and sign.status=1
+		and sign.user_teach_id=#{userTeachId}
+		and user_student.class_id=#{classId}
+		GROUP BY user_student.sno) as temp 
+  	</select>
+  	
+  	<!-- 本周已到次数 -->
+  	<select id="weekHaveSigned" resultType="java.util.HashMap">
+  		select user_student.sno,user_student.name,user_student.id stuId,user_student.sno,user.headimg, COUNT(*) count
+		from user_student,sign,user
+		where user_student.id=sign.user_stu_id 
+		and user_student.user_id=user.id
+		and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+		and sign.status=1
+		and sign.user_teach_id=#{userTeachId}
+		and user_student.class_id=#{classId}
+		GROUP BY user_student.sno
+		  		
+  	</select>
+  	
+  	<!-- 本周一次都没到的 -->
+  	
+  	<select id="weekNoneSigned" resultType="java.util.HashMap">
+  		select user_student.name,user_student.sno,user.headimg 
+		from user_student,user
+		where user_student.user_id=user.id
+		and user_student.class_id=#{classId}
+		and user_student.sno not in(
+		select user_student.sno 
+		from user_student,sign
+		where user_student.id=sign.user_stu_id
+		and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+		and sign.status=1
+		and sign.user_teach_id=#{userTeachId}
+		)
+  	</select>
+  </mapper>

@@ -1,0 +1,14 @@
+body,header{background: rgba(30, 23, 23, 0.94);}
+.arrow{padding: 11px;}
+.mui-content {
+    background-color: #fff;
+}
+.mui-bar-nav~.mui-content {
+	padding-top: 0px;
+}
+.pd{
+	padding-left: 60px;
+	padding-bottom: 10px;
+}
+.top_pd{padding-top: 15px;}
+#code{padding-bottom:15px;}

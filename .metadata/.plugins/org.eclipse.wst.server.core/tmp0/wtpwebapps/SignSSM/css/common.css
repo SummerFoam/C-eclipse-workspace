@@ -1,0 +1,26 @@
+@charset "UTF-8";
+/**
+ * 滚动条
+ */
+ ::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-moz-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{
+    background-color:#e7e7bf;
+}
+::-webkit-scrollbar-thumb{ 
+	border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    background-color:hsl(174, 100%, 72%);
+}
+.pagination>li>a, .pagination>li>span{
+	color:#000;
+}
+#pn_input,.layui-btn-sm{height:33px;}
+.page_nav{text-align:center;}

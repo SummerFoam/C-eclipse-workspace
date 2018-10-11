@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.CourseDao">
+  	<!-- public List<Course> findAllCourse(); -->
+  	<!-- 查询已启用的课程列表 -->
+  	<select id="findAllCourse" resultType="com.pdsu.ssm.bean.Course">
+  		select * from course where status=1
+  	</select>
+  	<!-- 查找所有 -->
+  	<resultMap type="com.pdsu.ssm.bean.Course" id="CourseListMap">
+  		<id property="id" column="id"/>
+  		<result property="name" column="name"/>
+  		<result property="courseCount" column="course_count"/>
+  		<result property="status" column="status"/>
+  		<result property="create_time" column="createTime"/>
+  		<result property="update_time" column="updateTime"/>
+  	</resultMap>
+  	<select id="findAllByPage" resultMap="CourseListMap">
+  		select * from course order by id desc limit #{startPos},#{pageSize}
+  	</select>
+  	<!-- 获取总记录数 -->
+  	<select id="getCourseCount" resultType="java.lang.Integer">
+  		select count(*) from course 
+  	</select>
+  	
+  	<!-- public List<Course> findByName(String name); -->
+  	<select id="findByName" resultType="com.pdsu.ssm.bean.Course">
+  		select * from course where name like #{name} "%" limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getLikeNameCount" resultType="java.lang.Integer">
+  		select count(*) from course where name like #{name}"%"
+  	</select>
+  	
+  	<!-- public int add(Course course); -->
+  	<insert id="add" parameterType="com.pdsu.ssm.bean.Course">
+  		insert into course(name,course_count,create_time,update_time,status)
+  	    values(#{name},#{courseCount},#{createTime},#{updateTime},#{status})
+  	</insert>
+  	
+  	<!-- public Course isExist(String name); -->
+  	<select id="isExist" resultType="com.pdsu.ssm.bean.Course">
+  		select * from course where name=#{name}
+  	</select>
+  	
+  	<!-- public int deleteByIds(int ids); -->
+  	<delete id="deleteByIds" parameterType="com.pdsu.ssm.bean.Course">
+  		delete from course where id=#{id}
+  	</delete>
+  	
+  	<!-- public int delete(Course course); -->
+  	<delete id="delete" parameterType="com.pdsu.ssm.bean.Course">
+  		delete from course where id=#{id}
+  	</delete>
+  	
+  	<!-- 
+  		public int update(Course course);
+		public Course findById(Integer id);
+  	 -->
+  	 <update id="update" parameterType="com.pdsu.ssm.bean.Course">
+  	 	update course set name=#{name},course_count=#{courseCount},status=#{status},update_time=#{updateTime}
+  	 	where id=#{id}
+  	 </update>
+  	 <select id="findById" resultType="com.pdsu.ssm.bean.Course">
+  	 	select * from course where id=#{id}
+  	 </select>
+  	 
+  	 <!-- public int updateStatus(Course course); -->
+  	 <update id="updateStatus" parameterType="com.pdsu.ssm.bean.Course">
+  	 	update course set status=#{status} where id=#{id}
+  	 </update>
+  	 
+  	 <!-- 停课 -->
+  	 <select id="findStop" resultType="com.pdsu.ssm.bean.Course">
+  	 	select * from course where status=0 limit #{startPos},#{pageSize}
+  	 </select>
+  	 <select id="getStopCount" resultType="java.lang.Integer">
+  	 	select count(*) from course where status=0
+  	 </select>
+  	 
+  	 <!-- 开课 -->
+  	 <select id="findStart" resultType="com.pdsu.ssm.bean.Course">
+  	 	select * from course where status=1 limit #{startPos},#{pageSize}
+  	 </select>
+  	 <select id="getStartCount" resultType="java.lang.Integer">
+  	 	select count(*) from course where status=1
+  	 </select>
+  	 
+  	 <!-- 根据名字查询 -->
+  	 <select id="findByName1" resultType="com.pdsu.ssm.bean.Course">
+  	 	select * from course where name=#{name}
+  	 </select>
+  </mapper>

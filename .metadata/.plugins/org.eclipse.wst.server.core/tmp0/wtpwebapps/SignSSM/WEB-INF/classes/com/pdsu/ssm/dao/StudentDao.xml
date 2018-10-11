@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.StudentDao">
+  	<!-- public Student getUserAndEmpById(Integer userId); -->
+  	<resultMap type="com.pdsu.ssm.bean.Student" id="getStudentByUserIdMap">
+  		<id  column="id" property="id"/>
+  		<result column="user_id" property="userId"/>
+  		<result column="name" property="name"/>
+  		<result column="sno" property="sno"/>
+  		<result column="grade" property="grade"/>
+  		<result column="department" property="department"/>
+  		<result column="class_id" property="classId"/>
+  		<result column="create_time" property="createTime"/>
+  		<result column="update_time" property="updateTime"/>
+  	</resultMap>
+  	<select id="getStudentByUserId" resultMap="getStudentByUserIdMap">
+  		select * from user_student where user_id=#{userId}
+  	</select>
+  	
+  	<!-- public int insert(Student student); -->
+  	<insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.pdsu.ssm.bean.Student">
+  		insert into user_student(user_id,name,sno,grade,department,class_id,create_time,update_time)
+  		values(#{userId},#{name},#{sno},#{grade},#{department},#{classId},#{createTime},#{updateTime})
+  	</insert>
+  	
+  	<!-- public int update(Student student); -->
+  	<update id="update" parameterType="com.pdsu.ssm.bean.Student">
+  		update user_student set name=#{name},sno=#{sno},grade=#{grade},department=#{department},class_id=#{classId}
+  		where id=#{id}
+  	</update>
+  	
+  	<!-- 根据classId查询 -->
+  	<select id="findByclassId" resultType="com.pdsu.ssm.bean.Student">
+  		select * from user_student where class_id=#{classId}
+  	</select>
+  	
+  	<select id="findBsomeyclassId" resultType="java.util.HashMap">
+  		select user_student.name,user_student.id stuId,user_student.sno,user_student.class_id classId,
+		user_student.department,user_student.grade,user.headimg,class.name classname 
+		from user_student,class,user 
+		where user_student.class_id=class.id and user_student.class_id=#{classId}
+		group by sno
+  	</select>
+  	
+  	<!-- 根据班级ID查询总人数 -->
+  	<select id="getStudentCount" resultType="java.lang.Integer">
+  		select count(*) from user_student where class_id=#{classId}
+  	</select>
+  	
+  	<!-- 查找所有 -->
+  	<select id="findAllStudents" resultType="com.pdsu.ssm.bean.Student">
+  		select * from user_student
+  	</select>
+  	
+  	<!-- 所有签到记录 -->
+  	<select id="findAllMySign" resultType="java.util.HashMap">
+  		select sign.signtime,course.name couname,teacher.name tname,user_student.name stuname 
+		from sign,course,teacher,user_student
+		where user_student.id=sign.user_stu_id and teacher.id=sign.user_teach_id and course.id=sign.course_id
+		and user_student.id=#{id}
+  	</select>
+  	
+  	<!-- 本节签到记录 -->
+  	<select id="findMyCurrSign" resultType="java.util.HashMap">
+  		select sign.signtime,course.name couname,teacher.name tname,user_student.name stuname
+		from sign,course,teacher,user_student
+		where user_student.id=sign.user_stu_id and teacher.id=sign.user_teach_id and course.id=sign.course_id
+		and user_student.id=#{id}
+		and sign.signtime>#{signtime}
+  	</select>
+  	
+  	<!-- 查询已到人数 -->
+  	<select id="TotalCount" resultType="java.lang.Integer">
+  		select count(*) from user_student,sign 
+  		where user_student.id=sign.user_stu_id 
+  		and user_student.class_id=#{classId} and sign.signtime between #{signtimeBegin} and #{signtimeEnd}
+  		and sign.status = 1
+  	</select>
+  	
+  </mapper>

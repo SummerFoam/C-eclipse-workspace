@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.mybatis.mapper.BookMapper">
+	<!-- 查询 public Book getBookId(Integer id);-->
+	<!-- 1 -->
+	<!-- <select id="getBookId" resultType="com.pdsu.mybatis.entity.Book">
+		select id,book_name bookName,price,author from book where id = #{id}
+	</select>
+	 -->
+	 
+	 <!-- 2在mabits-config.xml配置 <settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings> --> 
+	<!--<select id="getBookId" resultType="com.pdsu.mybatis.entity.Book">
+		select id,book_name,price,author from book where id = #{id}
+	 </select>
+	  -->
+	  
+	  <!-- 3 -->
+	  <resultMap type="com.pdsu.mybatis.entity.Book" id="sss">
+	  	<id column="id" property="id"/>
+	  	<result column="book_name" property="bookName"/>
+	  	<result column="price" property="price"/>
+	  	<result column="author" property="author"/>
+	  </resultMap>
+	 <select id="getBookId" resultMap="sss">
+		select id,book_name,price,author from book where id = #{id}
+	 </select>
+	 
+	 <!-- public int addBook(Book book); -->
+	 <insert id="addBook">
+	 	insert into book(book_name,price,author) values(#{bookName},#{price},#{author})
+	 </insert>
+	 
+	 <!-- public int updateBook(Integer id); -->
+	 <update id="updateBook">
+	 	update book set
+	 	book_name=#{bookName},
+	 	price=#{price},
+	 	author=#{author}
+	 	where id=#{id}
+	 </update>
+	 <!-- public Book getAllBook(); -->
+	 <select id="getAllBook" resultType="com.pdsu.mybatis.entity.Book">
+	 	select * from book
+	 </select>
+	 <!-- public int deleteBookById(Integer id); -->
+	 <delete id="deleteBookById">
+		delete from book where id = #{id}
+	</delete>
+</mapper>

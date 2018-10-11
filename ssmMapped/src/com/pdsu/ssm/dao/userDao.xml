@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 多对多//多对多：根据根据用户 id 查询所有的用户组信息 -->
+  
+  <mapper namespace="com.pdsu.ssm.dao.userDao">
+  	<select id="getUsers" resultMap="getGroupMap">
+  		select u.uname, ug.user_id, g.gid,g.gname from users_groups ug,groups g,users u
+		where ug.group_id=g.gid and u.uid=ug.user_id and ug.user_id=#{uid}
+  	</select>
+  	<!-- 
+  	<resultMap type="com.pdsu.ssm.manyTomanyBean.Groups" id="getGroupMap">
+  		<id column="gid" property="gid"/>
+  		<result column="gname" property="gname"/>
+  		<collection property="users" ofType="com.pdsu.ssm.manyTomanyBean.Users">
+  			<id column="uid" property="uid"/>
+  			<result column="uname" property="uname"/>
+  		</collection>
+  	</resultMap>
+  	 -->
+  	<resultMap type="com.pdsu.ssm.manyTomanyBean.Users" id="getGroupMap">
+  		<id column="uid" property="uid"/>
+  		<result column="uname" property="uname"/>
+  		<collection property="groups" ofType="com.pdsu.ssm.manyTomanyBean.Groups">
+  			<id column="gid" property="gid"/>
+  			<result column="gname" property="gname"/>
+  		</collection>
+  	</resultMap>
+  </mapper>

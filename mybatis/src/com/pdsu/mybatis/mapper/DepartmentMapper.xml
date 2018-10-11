@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.mybatis.mapper.DepartmentMapper">
+	<!-- 对一第三种方法 -->
+	<!-- public Deparment getDeptById(Integer id); -->
+	<!-- <select id="getDeptById" resultType="com.pdsu.mybatis.entity.Deparment">
+		select id,deptName
+		from dept
+		where id=#{id}
+	</select> -->
+	
+	<!-- 处理对多的第一种方法 -->
+	<!-- public Deparment getDeptAndemp(Integer id); -->
+	<!-- <resultMap type="com.pdsu.mybatis.entity.Deparment" id="getDeptAndempResultMap">
+		<id column="id" property="id"/>
+		<result column="deptName" property="deptName"/>
+		<collection property="list" ofType="com.pdsu.mybatis.entity.Employee">
+			<result column="emp_name" property="empName"/>
+			<result column="password" property="password"/>
+			<result column="gender" property="gender"/>
+			<result column="email" property="email"/>
+		</collection>
+	</resultMap>
+	<select id="getDeptAndemp" resultMap="getDeptAndempResultMap">
+		select d.id,d.deptName,e.emp_name,e.password,e.gender,e.email
+		from dept d
+		left join emp e
+		on e.did=d.id
+		where d.id=#{id}
+	</select> -->
+	
+	
+	<!-- 处理对多的第二种方法 -->
+	<!-- public Deparment getDeptAndemp(Integer id); -->
+	<resultMap type="com.pdsu.mybatis.entity.Deparment" id="getDeptAndEmpWithStep">
+		<id column="id" property="id"/>
+		<result column="deptName" property="deptName"/>
+		<collection property="list" select="com.pdsu.mybatis.mapper.EmployeeMapper.getEmpsByDeptId" column="id">
+		</collection>
+	</resultMap>
+	<select id="getDeptAndEmpWithStep" resultMap="getDeptAndEmpWithStep">
+		select id,deptName
+		from dept
+		where id=#{id}
+	</select>
+	
+</mapper>

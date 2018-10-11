@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.mybatis.mapper.EmployeeMapper">
+	<!-- public Employee getEmpAndDeptById(Integer id); -->
+	<!-- 对一的关系，第一种处理关系 -->
+	<!-- <resultMap type="com.pdsu.mybatis.entity.Employee" id="getEmpAndDeptByIdResultMap">
+		<result column="id" property="id"/>
+		<result column="emp_name" property="empName"/>
+		<result column="gender" property="gender"/>
+		<result column="email" property="email"/>
+		<result column="deptName" property="dept.deptName"/>
+		<result column="did" property="dept.did"/>
+	</resultMap> -->
+	<!-- <select id="getEmpAndDeptById" resultMap="getEmpAndDeptByIdResultMap">
+		select e.id,e.emp_name,e.password,e.gender,e.email,d.deptName
+		from emp e
+		left join dept d
+		on e.did=d.id
+		where e.id=#{id}
+	</select> -->
+	
+	
+	<!-- 对一的关系，第二种处理关系 -->
+	<!-- <resultMap type="com.pdsu.mybatis.entity.Employee" id="getEmpAndDeptByIdResultMap">
+		<result column="id" property="id"/>
+		<result column="emp_name" property="empName"/>
+		<result column="gender" property="gender"/>
+		<result column="email" property="email"/>
+		<result column="deptName" property="dept.deptName"/> -->
+		<!-- association用来映射EmPloyee类中的哪个属性被封装为一个对象 
+			javaType用来指定封装对象的数据类型
+		-->
+	<!-- 	<association property="dept" javaType="com.pdsu.mybatis.entity.Deparment">
+			<id column="did" property="id"/>
+			<result column="deptName" property="deptName"/>
+		</association>
+	</resultMap> -->
+	<!--  <select id="getEmpAndDeptById" resultMap="getEmpAndDeptByIdResultMap">
+		select e.id,e.emp_name,e.password,e.gender,e.email,d.deptName
+		from emp e
+		left join dept d
+		on e.did=d.id
+		where e.id=#{id}
+	</select> -->
+	
+	
+	<!-- 对一的关系，第三种处理关系 -->
+	<resultMap type="com.pdsu.mybatis.entity.Employee" id="getEmpAndDeptByIdResultMap">
+		<id column="id" property="id"/>
+		<result column="emp_name" property="empName"/>
+		<result column="gender" property="gender"/>
+		<result column="email" property="email"/>
+		<association property="dept" select="com.pdsu.mybatis.mapper.DepartmentMapper.getDeptById" column="did"></association>
+	</resultMap>
+	<select id="getEmpAndDeptById" resultMap="getEmpAndDeptByIdResultMap">
+		select id,emp_name,password,email,did
+		from emp
+		where did=#{id}
+	</select>
+	
+	<!-- 对多第二种 -->
+	<!-- public List<Employee> getEmpsByDeptId(Integer id); -->
+	<select id="getEmpsByDeptId" resultType="com.pdsu.mybatis.entity.Employee">
+		select id,emp_name empName, gender,password,email
+		from emp
+		where did=#{id}
+	</select>
+	
+</mapper>

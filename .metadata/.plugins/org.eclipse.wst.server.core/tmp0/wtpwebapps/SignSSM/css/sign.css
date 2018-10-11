@@ -1,0 +1,35 @@
+@charset "UTF-8";
+.mui-content{padding-top: 50px!important;}
+.head{background: #C7C3C7;}
+.mui-grid-view.mui-grid-9{background-color: #fff;}
+.pic_stu{    
+	font-size: 1.5rem;
+    color: #30D1F7;
+}
+.pic_curr{
+    font-size: 1.56rem;
+    color: red;	
+}
+.pin_month{
+    color: #D800C6;
+    font-size: 1.5rem;
+}
+.pic_term{
+	font-size: 1.6rem;
+    color: #4FF51B;
+}
+.pic_random{
+	font-size: 1.5rem;
+    color: #FFAC0E;
+}
+li:hover{
+	background:#ccc;
+}
+.pic_absence {
+    font-size: 1.5rem;
+    color: #F5C581;
+}
+.pin_week{
+	font-size: 1.5rem;
+    color: #2313FF;
+}

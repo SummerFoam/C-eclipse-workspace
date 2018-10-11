@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.ssm.mapper.BookMapper">
+	<!-- public List<Book> getList(); -->
+	<select id="getList" resultType="com.pdsu.ssm.bean.Book">
+		select id,book_name bookName,author,price,sales,stock,img_path imgPath
+		from book
+	</select>
+	<!-- public int getTotalRecord(); -->
+	<select id="getTotalRecord" resultType="java.lang.Integer">
+		select count(*) from book
+	</select>
+	<!-- public List<Book> getLimitList(@Param("index")int index, @Param("pageSize")int pageSize); -->
+	<select id="getLimitList" resultType="com.pdsu.ssm.bean.Book">
+		select id,book_name bookName,author,price,sales,stock,img_path imgPath
+		from book limit#{index},#{pageSize}
+	</select>
+</mapper>

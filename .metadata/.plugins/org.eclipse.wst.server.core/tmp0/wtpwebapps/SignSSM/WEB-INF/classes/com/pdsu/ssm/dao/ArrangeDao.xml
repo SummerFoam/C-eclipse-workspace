@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.ArrangeDao">
+  	<!-- 查看所有教学任务 -->
+  	<resultMap type="com.pdsu.ssm.bean.Arrange" id="findAllMap">
+  		<id column="id" property="id"/>
+  		<result column="croom_id" property="croomId"/>
+  		<result column="course_id" property="courseId"/>
+  		<result column="user_id" property="userId"/>
+  		<result column="class_id" property="classId"/>
+  		<result column="create_time" property="createTime"/>
+  		<result column="update_time" property="updateTime"/>
+  	</resultMap>
+  	<select id="findAll" resultType="java.util.HashMap">
+  		select cro.name croName,cou.name couName,cou.course_count,t.name tName,arr.id,arr.create_time,arr.update_time,class.name classname
+  		from croom cro,course cou,teacher t,arrange arr,class
+		where arr.croom_id=cro.id and arr.course_id=cou.id and arr.user_id=t.id and class.id=arr.class_id
+		limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="findTotalCount" resultType="java.lang.Integer">
+  		select count(*) from arrange
+  	</select>
+  	
+  	
+  	<select id="All" resultType="java.util.HashMap">
+  		select cro.name croName,cou.name couName,cou.course_count,t.name tName,arr.id,arr.create_time,arr.update_time
+  		from croom cro,course cou,teacher t,arrange arr
+		where arr.croom_id=cro.id and arr.course_id=cou.id and arr.user_id=t.id
+  	</select>
+  	
+  	<!-- public int insert(Arrange arrange); -->
+  	<insert id="insert" parameterType="com.pdsu.ssm.bean.Arrange">
+  		insert into arrange(croom_id,course_id,user_id,class_id,create_time,update_time) 
+  		values(#{croomId},#{courseId},#{userId},#{classId},#{createTime},#{updateTime})
+  	</insert>
+  	
+  	<!-- 是否存在 -->
+  	<select id="isExist" resultType="com.pdsu.ssm.bean.Arrange">
+  		select * from arrange where croom_id=#{croomId} and course_id=#{courseId} and user_id=#{userId}
+  	</select>
+  	
+  	<!-- public List<Map> findById(Integer id); -->
+  	<select id="findById" resultType="java.util.HashMap">
+  		select cro.name croName,cro.id croId,cou.name couName,cou.course_count,cou.id couId,t.name tName,t.id tId,arr.id,arr.create_time,arr.update_time
+  		from croom cro,course cou,teacher t,arrange arr
+		where arr.croom_id=cro.id and arr.course_id=cou.id and arr.user_id=t.id and arr.id=#{id}
+  	</select>
+  	
+  	<!-- public int update(Arrange arrange); -->
+  	<update id="update" parameterType="com.pdsu.ssm.bean.Arrange">
+  		update arrange set croom_id=#{croomId},course_id=#{courseId},user_id=#{userId}
+  		where id=#{id}
+  	</update>
+  	
+  	<!-- public int delete(Arrange arrange); -->
+  	<delete id="delete" parameterType="com.pdsu.ssm.bean.Arrange">
+  		delete from arrange where id=#{id}
+  	</delete>
+  	
+  	<!-- public int deleteByIds(int ids); -->
+  	<delete id="deleteByIds" parameterType="com.pdsu.ssm.bean.Arrange">
+  		delete from arrange where id=#{id}
+  	</delete>
+  	
+  	<!-- //根据课程ID和班级ID查询
+	public Arrange findBycouAndcro(Integer courseId,Integer croomId); -->
+	<select id="findBycouAndcro" resultType="com.pdsu.ssm.bean.Arrange">
+		select * from arrange where croom_id=#{croomId} and course_id=#{courseId} and user_id=#{userId}
+	</select>
+	
+		<!-- 查找课程 -->
+  	<select id="findCourseByTeacherId" resultType="java.util.HashMap">
+  		select DISTINCT course.name couname,course.id couId,teacher.name tname
+		from course,arrange,teacher
+		where course.id=arrange.course_id and teacher.id=arrange.user_id and arrange.user_id=#{userId}
+  	</select>
+  	
+  	<!-- 查找班级-->
+  	<select id="findCroomByIds" resultType="java.util.HashMap">
+  		select DISTINCT croom.name croname,croom.id croId,teacher.name tname 
+  		from arrange,croom,teacher
+		where croom.id=arrange.croom_id and teacher.id=arrange.user_id and arrange.user_id=#{userId} and arrange.course_id=#{courseId}
+  	</select>
+  	
+  	<!-- 根据classId查询 -->
+  	<select id="findArrByclassId" resultType="com.pdsu.ssm.bean.Arrange">
+  		select * from arrange where class_id=#{classId}
+  	</select>
+  	
+  	<!-- 根据croomId查询 -->
+  	<select id="findArrBycroomId" resultType="com.pdsu.ssm.bean.Arrange">
+  		select * from arrange where croom_id=#{croomId}
+  	</select>
+  	
+  	<!-- 根据courseId查询 -->
+  	<select id="findArrBycourseId" resultType="com.pdsu.ssm.bean.Arrange">
+  		select * from arrange where course_id=#{courseId}
+  	</select>
+  	
+  	<!-- 根据教师ID查询所教班级 -->
+  	<select id="findClasses" resultType="java.util.HashMap">
+  		select distinct class.name,class.id from arrange,class,teacher
+		where arrange.class_id=class.id and arrange.user_id=teacher.id and arrange.user_id=#{userId}
+  	</select>
+  </mapper>

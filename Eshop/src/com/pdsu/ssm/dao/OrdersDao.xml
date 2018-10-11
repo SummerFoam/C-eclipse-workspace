@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.OrdersDao">
+  	<!-- public int purchase(Orders orders); -->
+  	<resultMap type="com.pdsu.ssm.bean.Orders" id="result">
+  		<id column="orderId" property="orderId"/>
+  		<result property="customerId" column="customerId" />
+  	</resultMap>
+  	<insert id="purchase" parameterType="com.pdsu.ssm.bean.Orders">
+  		insert into orders(customerId) values(2)
+  		<selectKey resultType="Integer" order="AFTER" keyProperty="orders.orderId">
+            SELECT LAST_INSERT_ID() AS orderId
+        </selectKey>
+  	</insert>
+  	
+  	<!-- public List<Orders> AllOrders(); -->
+  	
+  	<select id="AllOrders" resultType="com.pdsu.ssm.bean.Orders">
+  		select * from orders
+  	</select>
+  	
+  	<!-- public int insertItem(Integer orderId); -->
+  	<resultMap type="com.pdsu.ssm.bean.ordersItem" id="result1">
+  		<result property="goodsId" column="goodsId" />
+  		<result property="orderId" column="goodsId" />
+  		<result property="count" column="count" />
+  	</resultMap>
+	<insert id="insertItem" parameterType="com.pdsu.ssm.bean.ordersItem">
+		insert into orders_item values(#{goodsId},#{orderId},#{count})
+	</insert>
+	
+
+  </mapper>

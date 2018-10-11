@@ -1,0 +1,68 @@
+
+.mui-plus.mui-android header.mui-bar{
+	display: none;
+}
+.mui-plus.mui-android .mui-bar-nav~.mui-content{
+	padding: 0;
+}
+
+/*hm寮�澶寸殑琛ㄧず浠呬负 Hello MUI绀轰緥瀹氫箟*/
+.hm-description{
+	margin: .5em 0;
+}
+body,.mui-content{background-color: #fff;}
+.hm-description>li {
+	font-size: 14px;
+	color: #8f8f94;
+}
+html {font-size: 62.5%;/*10 梅 16 脳 100% = 62.5%*/}
+.font-12-size{font-size: 12px;}
+.font-14-size{font-size: 14px;}
+.font-16-size{font-size: 16px;}
+.mui-title{
+	left: 40px;
+	right: 40px;
+}
+.user_icon{
+	position: absolute;
+    top: 12px;
+    bottom: 12px;
+    font-size: 20px!important;
+}
+.user_icon,header .mui-icon,header .mui-title{color: #f83a3a;}
+/*.mui-content{
+	position: absolute;
+    top: 45px;
+}*/
+header,.mui-row{
+	background: #fafafa!important;
+}
+.mui-bar-nav{border-bottom: 1px solid #c5c5c5!important;}
+.userImg{
+	padding-bottom: 0.6rem;
+    padding-top: .6rem;
+}
+.u_img{
+	text-align: center;
+}
+.u_img img{border-radius: 100%;}
+.u_name{
+	padding-top: .2rem;
+    font-size: 14px;
+}
+.u_info{padding: .2rem .2rem;}
+.userInfo{
+	border-top: 1px solid #ccc;
+}
+.arrow{
+	padding: .3rem;
+}
+.fa-address-card-o{color: #898080;}
+.item_icon{padding: 0 .2rem;}
+.arrow{color: #9e9898;}
+.u_info span{color:#000;}
+.comm{
+	border-bottom: 1px solid #ccc;
+	padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+}

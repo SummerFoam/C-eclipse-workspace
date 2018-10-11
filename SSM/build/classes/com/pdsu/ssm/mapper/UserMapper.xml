@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.ssm.mapper.UserMapper">
+	<!-- public List<User> getList(); -->
+	<select id="getList" resultType="com.pdsu.ssm.bean.User">
+		select * from user
+	</select>
+	
+	<!-- public int regist(User user); -->
+	<insert id="regist">
+		insert into user(username,password,email) values(#{username},#{password},#{email})
+	</insert>
+	
+	<!-- public User login(User user); -->
+	<select id="login" resultType="com.pdsu.ssm.bean.User">
+		select id,username,password,email from user where username=#{username} and password=#{password}
+	</select>
+</mapper>

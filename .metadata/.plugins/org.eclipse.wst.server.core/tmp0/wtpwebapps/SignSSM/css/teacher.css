@@ -1,0 +1,33 @@
+
+body,.mui-content{
+	background: #fff!important;
+}
+.bg{
+	padding: 3rem 0;
+	position: relative;
+	text-align: center;
+}
+.bg .bg-img{
+	width: 30rem;
+    height: 15rem;
+    border-radius: 10%;
+    box-shadow: 8px 5px 10px #ccc;
+}
+.head-img{
+    border-radius: 100%;
+   
+}
+.head-info{
+ 	position: absolute;
+    top: 5.5rem;
+    left: 12rem;
+    right: 12rem;
+    margin: 0 auto;
+}
+.pd-bto{padding-bottom:1rem}
+.mui-table-view-cell {
+    position: relative;
+    overflow: hidden;
+    padding: 12px 15px;
+    -webkit-touch-callout: none;
+}

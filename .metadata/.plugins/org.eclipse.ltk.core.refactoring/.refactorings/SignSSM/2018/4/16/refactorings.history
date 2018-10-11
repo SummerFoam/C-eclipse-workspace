@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;SignSSM/WebContent/admin/class-status.jsp&apos; to &apos;class-stop.jsp&apos;" description="Rename resource &apos;class-status.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="WebContent/admin/class-status.jsp" name="class-stop.jsp" stamp="1523934159628" updateReferences="true"/>
+</session>

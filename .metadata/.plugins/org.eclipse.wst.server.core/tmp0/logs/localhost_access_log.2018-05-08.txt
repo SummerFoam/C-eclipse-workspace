@@ -1,0 +1,10 @@
+127.0.0.1 - - [08/May/2018:21:48:46 +0800] "GET / HTTP/1.1" 404 951
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/weixin/tch_personal.jsp HTTP/1.1" 200 2977
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/images/st1.jpg HTTP/1.1" 200 53391
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/images/ggn.PNG HTTP/1.1" 404 995
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/css/teacher.css HTTP/1.1" 200 385
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/css/wx.css HTTP/1.1" 200 1286
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/css/font-awesome.min.css HTTP/1.1" 200 31000
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/css/mui.min.css HTTP/1.1" 200 84916
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/fonts/mui.ttf HTTP/1.1" 200 29884
+0:0:0:0:0:0:0:1 - - [08/May/2018:21:48:48 +0800] "GET /SignSSM/fonts/fontawesome-webfont.eot? HTTP/1.1" 200 165742

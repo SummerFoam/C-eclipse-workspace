@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pdsu.mybatis.mapper.UserMapper">
+	<!-- 查询 public User getUserById(String id);-->
+	<select id="getUserById" resultType="com.pdsu.mybatis.entity.User">
+		select id,username,password,email from user where id = #{id}
+	</select>
+	<!-- public int deleteUserById(String id); -->
+	<delete id="deleteUserById">
+		delete from user where id = #{id}
+	</delete>
+	<!-- public User getUserByIdAndPwd(String username,String password); -->
+	<select id="getUserByIdAndPwd" resultType="com.pdsu.mybatis.entity.User">
+		select id,username,password,email 
+		from user
+		 where username = #{username} and password=#{password}
+	</select>
+	<!-- public int saveUser(User user); -->
+	<insert id="saveUser">
+		insert into user values(#{id},#{username},#{password},#{email})
+	</insert>
+	
+	<!-- 返回值为对象时，返回值类型必须指定resultType -->
+	<!-- public User getUserByMap(Map<String, Object> map); -->
+	<select id="getUserByMap" resultType="com.pdsu.mybatis.entity.User">
+		select id,username,password,email
+		from ${table}
+		where username=#{name} and password=#{pwd}
+	</select>
+	
+	<!-- 返回值为集合 -->
+	<!-- public List<User> getAll(); -->
+	<select id="getAll" resultType="com.pdsu.mybatis.entity.User">
+		select * from user
+	</select>
+	
+	<!-- 列名当做键，值为value -->
+	<!-- public Map<String,Object> getUserMapById(Integer id); -->
+	<select id="getUserMapById" resultType="java.util.Map">
+		select * from user where id=#{id}
+	</select>
+</mapper>

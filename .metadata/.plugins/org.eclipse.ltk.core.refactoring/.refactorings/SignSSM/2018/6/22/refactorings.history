@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;SignSSM/WebContent/weixin/teacher/findMonthSign.jsp&apos; to &apos;findDaySign.jsp&apos;" description="Rename resource &apos;findMonthSign.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="WebContent/weixin/teacher/findMonthSign.jsp" name="findDaySign.jsp" stamp="1527916563558" updateReferences="true"/>
+</session>

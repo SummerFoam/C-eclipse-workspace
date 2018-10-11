@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.UserDao">
+  	
+  	<resultMap type="com.pdsu.ssm.bean.User" id="userMap">
+  		<id property="id" column="id"/>
+  		<result property="openid" column="openid"/>
+  		<result property="nickname" column="nickname"/>
+  		<result property="headimg" column="headimg"/>
+  		<result property="type" column="type"/>
+  		<result property="frequency" column="frequency"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateTime" column="update_time"/>
+  	</resultMap>
+  	<!-- 插入 -->
+  	<insert id="insert" parameterType="com.pdsu.ssm.bean.User">
+  		insert into user(openid,nickname,headimg,create_time,update_Time)
+  		values(#{openid},#{nickname},#{headimg},#{createTime},#{updateTime})
+  	</insert>
+  	
+  	<!-- 查找学生 -->
+  	<select id="findStudent" resultType="java.util.HashMap">
+  		select user_student.name,user_student.sno,user.id,user.openid,user.nickname,user.headimg,user.create_time,user.update_time,user.type 
+  		from user,user_student 
+		where type=0 and user_student.user_id=user.id 
+		limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getStudentCount" resultType="java.lang.Integer">
+  		select count(*) from user where type=0
+  	</select>
+  	
+  	<!-- 模糊查询 -->
+  	<select id="findByName" resultType="com.pdsu.ssm.bean.User">
+  		select * from user where nickname like "%"#{nickname}"%" limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getLikeNameCount" resultType="java.lang.Integer">
+  		select count(*) from user where nickname like "%"#{nickname}"%"
+  	</select>
+  	
+  	<!-- 查找教师 -->
+  	<select id="findTeacher" resultType="java.util.HashMap">
+  		select user.id,user.openid,user.nickname,user.headimg,user.create_time,user.update_time,user.type,teacher.name,teacher.age,teacher.tel,teacher.email
+  		from user,teacher 
+		where type=1 and teacher.user_id=user.id  
+		limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getTeacherCount" resultType="java.lang.Integer">
+  		select count(*) from user where type=1
+  	</select>
+  	
+  	<!-- 查找访客 -->
+  	<select id="findVisitor" resultType="com.pdsu.ssm.bean.User">
+  		select * from user where type=2 limit #{startPos},#{pageSize}
+  	</select>
+  	<select id="getVisitorCount" resultType="java.lang.Integer">
+  		select count(*) from user where type=2
+  	</select>
+  	
+  	<!-- 修改类型 -->
+  	<update id="updateType" parameterType="com.pdsu.ssm.bean.User">
+		update user set type=#{type} where id=#{id}  	
+  	</update>
+  	
+  	<!-- public User findById(String openId); -->
+  	<select id="findById" resultType="com.pdsu.ssm.bean.User">
+  		select * from user where openid=#{openid}
+  	</select>
+  </mapper>

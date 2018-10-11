@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <!-- 多对一 ：定义操作 Classes 表的sql映射文件-->
+  <mapper namespace="com.pdsu.ssm.dao.ClassesDao1">
+  	<!-- public Classes getClasses(Integer id); -->
+  	<select id="getClasses" resultMap="getClassesMap">
+  		select * from classes c,student s where 
+  		s.cid=c.cid and c.cid=#{cid}
+  	</select>
+  	<resultMap type="com.pdsu.ssm.oneTomanyBean.Classes" id="getClassesMap">
+  		<id column="cid" property="cid"/>
+  		<result column="cname" property="cname"/>
+  		<collection property="students" ofType="com.pdsu.ssm.oneTomanyBean.Student">
+  			<id column="sid" property="sid"/>
+  			<result column="sname" property="sname"/>
+  		</collection>
+  	</resultMap>
+  </mapper>

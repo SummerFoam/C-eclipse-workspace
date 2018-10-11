@@ -1,0 +1,412 @@
+package com.pdsu.ssm.controller;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.pdsu.ssm.bean.Sign;
+import com.pdsu.ssm.bean.Student;
+import com.pdsu.ssm.bean.Teacher;
+import com.pdsu.ssm.bean.User;
+import com.pdsu.ssm.service.ArrangeService;
+import com.pdsu.ssm.service.ClassService;
+import com.pdsu.ssm.service.SignService;
+import com.pdsu.ssm.service.StudentService;
+import com.pdsu.ssm.service.TeacherService;
+import com.pdsu.ssm.util.Common;
+import com.pdsu.ssm.util.LimitPageList;
+import com.pdsu.ssm.util.Page;
+import com.pdsu.ssm.util.TimeFormat;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+@Controller
+@RequestMapping(value = "/sign")
+public class SignController {
+	@Autowired
+	private SignService signService;
+	@Autowired
+	private TeacherService teacherService;
+	@Autowired
+	private ClassService classService;
+	@Autowired
+	private StudentService studentService;
+	@Autowired
+	private ArrangeService arrangeService;
+
+	// 扫码后添加
+	@RequestMapping(value = "/add")
+	public String add(HttpServletResponse response, HttpSession session, HttpServletRequest request)
+			throws IOException {
+		int createCodetime = Integer.parseInt(request.getParameter("time"));
+		session.setAttribute("createCodetime", createCodetime);
+		int croomId = Integer.parseInt(request.getParameter("croomId"));
+		int tchId = Integer.parseInt(request.getParameter("tchId"));
+		int courseId = Integer.parseInt(request.getParameter("courseId"));
+		int stuId = Integer.parseInt(request.getParameter("stuId"));
+		int arrangeId = Integer.parseInt(request.getParameter("arrangeId"));
+		int currTime = (int) (System.currentTimeMillis() / 1000);
+		// 签到时间在20分钟内
+		int offset = (currTime - createCodetime) / 60;
+		if (offset < 20) {
+			// 重复签到
+			Sign sign = signService.findByFourId(croomId, courseId, tchId, stuId);
+			if (sign == null || (currTime - sign.getSigntime()) > 20 * 60) {
+				sign = new Sign();
+				sign.setCroomId(croomId);
+				sign.setUserStuId(stuId);
+				sign.setUserTeachId(tchId);
+				sign.setCourseId(courseId);
+				sign.setArrangeId(arrangeId);
+				sign.setSigntime(currTime);
+				sign.setCreateTime(createCodetime);
+				sign.setUpdateTime(TimeFormat.timeStamp());
+				int i = signService.add(sign);
+				if (i > 0) {
+					return "weixin/student/sign_success";
+				} else {
+					return "weixin/student/sign_error";
+				}
+			} else {
+				return "weixin/student/sign_error";
+			}
+		} else {
+			return "weixin/student/sign_error";
+		}
+	}
+
+	// 查看签到记录
+	@RequestMapping(value = "/findAll")
+	public String findAll(Model m, @RequestParam(value = "pageNow", required = false) Integer pageNow) {
+		LimitPageList limitPageList = signService.findAll(pageNow);
+		Page page = limitPageList.getPage();
+		List<Map> list = (List<Map>) limitPageList.getList();
+		for (Map<String, Object> map : list) {
+			for (String s : map.keySet()) {
+				String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+				String createTime = TimeFormat.transForDate((Integer) map.get("create_time"));
+				String updateTime = TimeFormat.transForDate((Integer) map.get("update_time"));
+				m.addAttribute("signtime", signtime);
+				m.addAttribute("createTime", createTime);
+				m.addAttribute("updateTime", updateTime);
+			}
+		}
+		m.addAttribute("page", page);
+		m.addAttribute("list", list);
+		return "sign/sign-list";
+	}
+
+	// 批量删除
+	@RequestMapping(value = "/deleteByIds")
+	public void deleteByIds(HttpServletResponse response, HttpServletRequest request)
+			throws InterruptedException, IOException {
+		response.setContentType("application/json;charset=utf-8");
+		JSONObject jsonObject = new JSONObject();
+		// 获取字符串格式1,2,3,4,5,6
+		String ids = request.getParameter("ids");
+		if (ids == null || ids.isEmpty()) {
+			jsonObject.put("status", 0);
+			jsonObject.put("msg", "删除失败，共删除了0条数据");
+		} else {
+			// 将字符串1,2,3,4,5,6 转化成数组 arr = [1,2,3,4,5,6]
+			int[] arr = Common.intArr(ids);
+			// 循环删除
+			int num = signService.deleteList(arr);
+			// 如果全部删除
+			if (num == arr.length) {
+				jsonObject.put("status", 1);
+				jsonObject.put("msg", "删除成功，共删除了" + num + "条数据");
+			} else {
+				jsonObject.put("status", 0);
+				jsonObject.put("msg", "删除失败，共删除了" + num + "条数据");
+			}
+		}
+		Thread.sleep(1500);
+		response.getWriter().println(jsonObject);
+	}
+
+	// 删除
+	@RequestMapping(value = "/delete")
+	public void delete(Sign sign, HttpServletResponse response) throws InterruptedException, IOException {
+		response.setContentType("application/json;charset=utf-8");
+		JSONObject jsonObject = new JSONObject();
+		int i = signService.delete(sign);
+		if (i == 1) {
+			jsonObject.put("status", 0);
+			jsonObject.put("msg", "删除成功！");
+		} else {
+			jsonObject.put("status", 1);
+			jsonObject.put("msg", "删除失败！");
+		}
+		Thread.sleep(1500);
+		response.getWriter().println(jsonObject);
+	}
+
+	// 模糊查询
+	@RequestMapping(value = "/likeName")
+	public String findByName(Model m, @RequestParam(value = "pageNow", required = false) Integer pageNow,
+			HttpServletRequest request) throws UnsupportedEncodingException {
+		String name = request.getParameter("name");
+		name = new String(name.getBytes("iso8859-1"), "utf-8");
+		Teacher teacher = teacherService.findByName(name);
+		System.out.println(teacher.getId());
+		LimitPageList limitPageList = signService.findByname(teacher.getId(), pageNow);
+		Page page = limitPageList.getPage();
+		List<Map> list = (List<Map>) limitPageList.getList();
+		for (Map<String, Object> map : list) {
+			for (String s : map.keySet()) {
+				String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+				String createTime = TimeFormat.transForDate((Integer) map.get("create_time"));
+				String updateTime = TimeFormat.transForDate((Integer) map.get("update_time"));
+				m.addAttribute("signtime", signtime);
+				m.addAttribute("createTime", createTime);
+				m.addAttribute("updateTime", updateTime);
+			}
+		}
+		m.addAttribute("page", page);
+		m.addAttribute("list", list);
+		return "sign/findByName";
+	}
+
+	// 本节课签到,根据生成二维码的时间查询
+	@RequestMapping(value = "/findCurrent")
+	public String findCurrent(Model m, HttpSession session) {
+		// 获取当前时间
+		int currTime = (int) (System.currentTimeMillis() / 1000);
+		// 两小时之可以查看记录
+		int findTime = currTime - 120 * 60;
+		List<Map> list = signService.findCurrent(findTime);
+		for (Map<String, Object> map : list) {
+			for (String s : map.keySet()) {
+				String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+				String tName = (String) map.get("tName");
+				m.addAttribute("signtime", signtime);
+				m.addAttribute("tName", tName);
+			}
+		}
+		m.addAttribute("list", list);
+		return "weixin/teacher/findcurrent";
+	}
+
+	// 查看每日签到
+	@RequestMapping(value = "/findDaySign")
+	public String findDaySign(Model m, HttpServletRequest request, HttpSession session) {
+		int signtimeBegin = Integer
+				.parseInt(TimeFormat.datetoTimeStamp(request.getParameter("signtimeBegin"), "yyyy-MM-dd"));
+		int signtimeEnd = Integer
+				.parseInt(TimeFormat.datetoTimeStamp(request.getParameter("signtimeEnd"), "yyyy-MM-dd"));
+		User user = (User) session.getAttribute("user");
+		System.out.println(user.getId());
+		Teacher teacher = teacherService.findTeacherByUserId(user.getId());
+		if (teacher != null) {
+			List<Map> list = signService.findByDay(signtimeBegin, signtimeEnd, teacher.getId());
+			if (!list.isEmpty()) {
+				for (Map<String, Object> map : list) {
+					for (String s : map.keySet()) {
+						String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+						String tName = (String) map.get("tName");
+						m.addAttribute("signtime", signtime);
+						m.addAttribute("tName", tName);
+					}
+				}
+				m.addAttribute("list", list);
+				return "weixin/teacher/Day-list";
+			} else {
+				return "weixin/teacher/Day-null";
+			}
+		} else {
+			return "weixin/teacher/Day-null";
+		}
+
+	}
+
+	// 查询学期签到
+	@RequestMapping(value = "/findTermSign")
+	public String findTermSign(Model m, HttpServletRequest request, HttpSession session) {
+		String signTime = request.getParameter("signtime");
+		int[] intArr = Common.intArr(signTime);
+		int signtimeBegin = intArr[0];
+		int signtimeEnd = intArr[1];
+		User user = (User) session.getAttribute("user");
+		Teacher teacher = teacherService.findTeacherByUserId(user.getId());
+		if (teacher != null) {
+			List<Map> list = signService.findByTerm(signtimeBegin, signtimeEnd, teacher.getId());
+			if (!list.isEmpty()) {
+				for (Map<String, Object> map : list) {
+					for (String s : map.keySet()) {
+						String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+						String tName = (String) map.get("tName");
+						m.addAttribute("signtime", signtime);
+						m.addAttribute("tName", tName);
+					}
+				}
+				m.addAttribute("list", list);
+				return "weixin/teacher/term-list";
+			} else {
+				return "weixin/teacher/term-null";
+			}
+		} else {
+			return "weixin/teacher/term-null";
+		}
+	}
+
+	// 把所有学生的信息传到随机抽查页面
+	@RequestMapping(value = "/random")
+	public void Signrandom(HttpServletResponse response, Model m) throws IOException {
+		response.setContentType("application/json;charset=utf-8");
+		JSONArray jsonObject = null;
+		// 获取所有学生
+		List<Student> list = studentService.findAllStudents();
+		for (Student student : list) {
+			String name = student.getName();
+			m.addAttribute("name", name);
+		}
+		jsonObject = JSONArray.fromObject(list);
+		response.getWriter().println(jsonObject);
+	}
+
+	// 随机抽查
+	@RequestMapping(value = "/findSignByRandom")
+	public String findSignByRandom(HttpServletRequest request, Model m, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		Teacher teacher = teacherService.findTeacherByUserId(user.getId());
+		int userStuId = Integer.parseInt(request.getParameter("id"));
+		// 获取当前时间
+		int currTime = (int) (System.currentTimeMillis() / 1000);
+		// 可以查看节课程当前30分钟以内的签到记录
+		int time = currTime - 30 * 60;
+		List<Map> list = signService.findRandom(time, userStuId, teacher.getId());
+		if (!list.isEmpty()) {
+			for (Map<String, Object> map : list) {
+				for (String s : map.keySet()) {
+					String signtime = TimeFormat.transForDate((Integer) map.get("signtime"));
+					String tName = (String) map.get("tName");
+					m.addAttribute("signtime", signtime);
+					m.addAttribute("tName", tName);
+				}
+			}
+			m.addAttribute("list", list);
+			System.out.println(list);
+			return "weixin/teacher/random-list";
+		} else {
+			return "weixin/teacher/random-null";
+		}
+	}
+
+	// 旷课处理
+	@RequestMapping(value = "/doAbsent")
+	public void absent(HttpServletResponse response, HttpServletRequest request) throws IOException {
+		response.setContentType("application/json;charset=utf-8");
+		JSONObject jsonObject = new JSONObject();
+		int id = Integer.parseInt(request.getParameter("id"));
+		int i = signService.updateAbsent(id);
+		if (i > 0) {
+			jsonObject.put("status", 0);
+			jsonObject.put("msg", "操作成功！");
+		} else {
+			jsonObject.put("status", 1);
+		}
+		response.getWriter().println(jsonObject);
+	} 
+
+	// 缺勤统计
+	@RequestMapping(value = "/absent")
+	public String findAbsent(Model m) {
+		// 获取当前时间
+		int currTime = (int) (System.currentTimeMillis() / 1000);
+		// 可以查看节课程当前30分钟以内的签到记录
+		int time = currTime - 120 * 60;
+		List<Map> list = signService.findAbsent(time);
+		if (!list.isEmpty()) {
+			m.addAttribute("list", list);
+			return "weixin/teacher/absent-list";
+		} else {
+			return "weixin/teacher/absent-null";
+		}
+	}
+
+	// 根据教师ID查找班级
+	@RequestMapping(value = "/findClassesByTeaId")
+	public String findClasses(Model m, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		Teacher teacher = teacherService.findTeacherByUserId(user.getId());
+		List<Map> list = arrangeService.findClasses(teacher.getId());
+		m.addAttribute("list", list);
+		return "weixin/teacher/classes-week";
+	}
+
+	// 周签到,从n周一到周日
+	@RequestMapping(value = "/weekSign")
+	public String findWeekSign(Model m, HttpServletRequest request, HttpSession session) {
+		User user = (User) session.getAttribute("user");
+		Teacher teacher = teacherService.findTeacherByUserId(user.getId());
+		// 获取当前是第几周=[当前时间-开学时间（3.01）]/7;
+		// int
+		// nowData=Integer.parseInt(TimeFormat.transForDate(TimeFormat.timeStamp(),"yyyy")+TimeFormat.transForDate(TimeFormat.timeStamp(),"MM")+TimeFormat.transForDate(TimeFormat.timeStamp(),"dd"));
+		// 获取当前时间戳
+		int nowData = Integer.parseInt(TimeFormat
+				.datetoTimeStamp(TimeFormat.transForDate(TimeFormat.timeStamp(), "yyyy-MM-dd"), "yyyy-MM-dd"));
+		System.out.println(nowData);
+		// 截取年份
+		String year = TimeFormat.transForDate(TimeFormat.timeStamp(), "yyyy");
+		String start = year + "-03-01";
+		int startTime = Integer.parseInt(TimeFormat.datetoTimeStamp(start, "yyyy-MM-dd"));
+		System.out.println(startTime);
+		// 获取第几周
+		int currWeek = (int) Math.ceil((nowData - startTime) / (7 * 24 * 60 * 60));
+		System.out.println(currWeek);
+		String[] array = new String[currWeek + 1];
+		for (int i = 1; i <= currWeek; i++) {
+			array[i] = "第" + (currWeek - i + 1) + "周";
+			// System.out.println(i + "====>" + array[i]);
+		}
+		// int n = 1;
+		int classId = Integer.parseInt(request.getParameter("classId"));
+		// 获取当前日期
+
+		// List<Map> weekList = null;
+		List<Map> haveSignedList = null;
+		List<Map> weekNoneList = null;
+		int weekTotalCount = 0;
+		String n = request.getParameter("n");
+		if (n != null) {
+			String nowTime = TimeFormat.transForDate(TimeFormat.timeStamp(), "yyyy-MM-dd");
+			int currTime = Integer.parseInt(TimeFormat.datetoTimeStamp(nowTime, "yyyy-MM-dd"));
+			int currWeekDay = TimeFormat.getWeekofDate(new Date());
+			int signtimeBegin = currTime - currWeekDay * 24 * 60 * 60 * 7 * Integer.parseInt(n);
+			int signtimeEnd = currTime - currWeekDay * 24 * 60 * 60 - 24 * 60 * 60 * 7 * (Integer.parseInt(n) - 1);
+			// weekList = signService.findWeekSign(classId, signtimeBegin, signtimeEnd);
+			// 周总次数
+			try {
+				weekTotalCount = signService.weekTotalCount(teacher.getId(), classId, signtimeBegin, signtimeEnd);
+			} catch (Exception e) {
+				return "chart/weekTotalCount-null";
+			}
+			// 已到次数
+			haveSignedList = signService.weekHaveSigned(teacher.getId(), classId, signtimeBegin, signtimeEnd);
+			// 周签到0次
+			weekNoneList = signService.weekNoneSigned(teacher.getId(), classId, signtimeBegin, signtimeEnd);
+			System.out.println(weekNoneList);
+		}
+		m.addAttribute("haveSignedList", haveSignedList);
+		m.addAttribute("weekTotalCount", weekTotalCount);
+		m.addAttribute("weekNoneList", weekNoneList);
+		m.addAttribute("classId", classId);
+		m.addAttribute("arr", array);
+		return "chart/week-absent";
+	}
+
+}

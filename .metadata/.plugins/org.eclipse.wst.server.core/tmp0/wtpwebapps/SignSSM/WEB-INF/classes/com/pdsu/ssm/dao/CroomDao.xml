@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.CroomDao">
+  	<!-- public List<Croom> findCroomList(); -->
+  	
+	<select id="findAll" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where status=1
+	</select>
+	
+	<resultMap type="com.pdsu.ssm.bean.Croom" id="CroomListMap">
+  		<id property="id" column="id"/>
+  		<result property="name" column="name"/>
+  		<result property="address" column="address"/>
+  		<result property="createTime" column="create_time"/>
+  		<result property="updateTime" column="update_time"/>
+  	</resultMap>
+	<!-- 分页-->
+	<select id="findAllByPage" resultMap="CroomListMap">
+		select * from croom order by id desc limit #{startPos},#{pageSize} 
+	</select> 
+	<!-- 获取总记录数-->
+	<select id="getCroomCount" resultType="java.lang.Integer">
+		select count(*) from croom;
+	</select> 
+	
+	<!-- public int insert(Croom croom); -->
+	<insert id="insert" parameterType="com.pdsu.ssm.bean.Croom">
+		insert into croom(name,address,create_time,update_time,status) 
+		values(#{name},#{address},#{createTime},#{updateTime},#{status})
+	</insert>
+	
+	<!-- public Croom isExist(String name); --> 
+	<select id="isExist" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where name=#{name}
+	</select>
+	
+	<!-- public int delete(Croom croom); --> 
+	<delete id="delete" parameterType="com.pdsu.ssm.bean.Croom">
+		delete from croom where id=#{id}
+	</delete>
+	
+	<!-- public boolean update(Croom croom);
+	public Croom findById(Integer id); -->
+	<update id="update" parameterType="com.pdsu.ssm.bean.Croom">
+		update croom 
+		set name=#{name},address=#{address},status=#{status},update_time=#{updateTime} where id=#{id}
+	</update>
+	<select id="findById" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where id=#{id}
+	</select>
+	
+	<!-- public void deleteByIds(long []ids); -->
+	<delete id="deleteByIds" parameterType="com.pdsu.ssm.bean.Croom">
+		delete from croom where id=#{id}
+	</delete>
+	
+	<!-- public Croom findByLikeName(String name); -->
+	<select id="findByLikeName" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where name like #{name}"%" limit #{startPos},#{pageSize}
+	</select>
+	<select id="getLikeNameCount" resultType="java.lang.Integer">
+		select count(*) from croom where name like #{name}"%"
+	</select>
+	
+	<!-- 停用 -->
+	<select id="findStop" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where status=0 limit #{startPos},#{pageSize}
+	</select>
+	<select id="getStopCount" resultType="java.lang.Integer">
+		select count(*) from croom where status=0
+	</select>
+	
+	<!-- 启用 -->
+	<select id="findStart" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where status=1 limit #{startPos},#{pageSize}
+	</select>
+	<select id="getStartCount" resultType="java.lang.Integer">
+		select count(*) from croom where status=1
+	</select>
+	
+	<!-- public int updateStatus(Croom croom); -->
+	<update id="updateStatus" parameterType="com.pdsu.ssm.bean.Croom">
+		update croom set status=#{status} where id=#{id}
+	</update>
+	
+	<!-- 根据名字进行查询 -->
+	<select id="findByName" resultType="com.pdsu.ssm.bean.Croom">
+		select * from croom where name=#{name}
+	</select>
+  </mapper>

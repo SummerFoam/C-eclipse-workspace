@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.pdsu.ssm.dao.classesDao">
+  <!-- 一对一 -->
+  	<!-- public Classes getClassInfo(Integer id); -->
+  	<!-- 方式一：嵌套结果 
+  	使用嵌套结果映射来处理重复的联合结果的子集来封装联表查询的数据（去除重复的数据）  
+  	select * from class c,teacher t where c.teacher_id = t.t_id and c.c_id = 1  
+  	-->
+  	<select id="getClassInfo" resultMap="ClassResultMap">
+  		select * from class c,teacher t 
+  		where c.teacher_id=t.t_id and c.c_id=#{id}
+  	</select>
+  	<resultMap type="com.pdsu.ssm.oneTooneBean.Classes" id="ClassResultMap">
+  		<id property="id" column="c_id"/>
+  		<result property="name" column="c_name"/>
+  		<!-- 一对一关联查询 -->
+  		<association property="teacher" column="teacher_id" javaType="com.pdsu.ssm.oneTooneBean.Teacher">
+  			<id property="id" column="t_id"/>
+  			<result property="name" column="t_name"/>
+  		</association>
+  	</resultMap>
+  	
+  </mapper>

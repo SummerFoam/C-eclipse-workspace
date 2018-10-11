@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<!-- 开启 mybatis的懒加载机制-->
+<!-- <settings>
+	<setting name="lazyLoadEnabled" value="true"/>
+	<setting name="aggressiveLazyLoading" value="false"/>
+</settings> -->
+<!-- 设置自动驼峰命名转换，在xml中可以直接配置mapUnderscoreToCamelCase属性
+	设为true表示开启驼峰转换
+ -->
+	<!-- <settings>
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+	</settings> -->
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql:///mybatis?rewriteBatchedStatements=true"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+      </dataSource>
+    </environment>
+  </environments>
+  <mappers>
+  
+    <!--<mapper resource="UserMapper.xml"/>-->
+    <!-- 加载全局的 -->
+  <package name="com.pdsu.mybatis.mapper"/>
+   
+  </mappers>
+</configuration>
